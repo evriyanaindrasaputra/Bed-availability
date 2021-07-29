@@ -1,9 +1,12 @@
 <template>
-  <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
+  <div
+    id="nav"
+    class="bg-red-200 p-8 flex flex-col w-full items-center justify-center"
+  >
+    <!-- <router-link to="/">Home</router-link> |
+    <router-link to="/about">About</router-link> -->
+    <router-view />
   </div>
-  <router-view/>
 </template>
 
 <style>
@@ -13,10 +16,13 @@
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+  margin: 0;
+  padding: 0;
 }
 
 #nav {
-  padding: 30px;
+  /* padding: 30px; */
+  min-height: 100vh;
 }
 
 #nav a {
