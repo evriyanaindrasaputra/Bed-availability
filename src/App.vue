@@ -1,8 +1,5 @@
 <template>
-  <div
-    id="nav"
-    class="bg-red-200 p-8 flex flex-col w-full items-center justify-center"
-  >
+  <div id="nav" class="p-8 w-full md:max-w-6xl mx-auto">
     <!-- <router-link to="/">Home</router-link> |
     <router-link to="/about">About</router-link> -->
     <router-view />

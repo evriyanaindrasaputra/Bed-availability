@@ -1,103 +1,140 @@
 <template>
-  <div class="home h-80 rounded-lg shadow-xl p-4 w-80 bg-red-300">
-    <h1 class="py-2 px-1 text-center text-xl font-bold mb-2">
-      Ketersediaan Tempat Tidur Rumah Sakit berdasarkan Kota 🚀
-    </h1>
-    <div class="mb-4">
-      <div class="inline-flex mr-4 rounded-lg">
-        <input
-          type="radio"
-          name="room_type"
-          id="roomCovid"
-          value="1"
-          checked
-          hidden
-          @change="changeJenis($event)"
-        />
-        <label
-          for="roomCovid"
-          class="
-            radio
-            text-center
-            self-center
-            py-2
-            px-4
-            rounded-lg
-            cursor-pointer
-            hover:opacity-75
-          "
-          >Covid</label
-        >
+  <div class="home p-4 w-full mx-auto">
+    <div class="bg-white/40 p-5 h-56 rounded-lg shadow-lg">
+      <h1 class="py-2 px-1 text-center text-xl font-bold mb-2">
+        Ketersediaan Tempat Tidur Rumah Sakit berdasarkan Kota 🚀
+      </h1>
+      <div class="mb-4">
+        <div class="inline-flex mr-4 rounded-lg">
+          <input
+            type="radio"
+            name="room_type"
+            id="roomCovid"
+            value="1"
+            checked
+            hidden
+            @change="changeJenis($event)"
+          />
+          <label
+            for="roomCovid"
+            class="
+              radio
+              text-center
+              self-center
+              py-2
+              px-4
+              rounded-lg
+              cursor-pointer
+              hover:opacity-75
+            "
+            >Covid</label
+          >
+        </div>
+        <div class="inline-flex rounded-lg">
+          <input
+            type="radio"
+            name="room_type"
+            id="roomPublic"
+            value="2"
+            hidden
+            @change="changeJenis($event)"
+          />
+          <label
+            for="roomPublic"
+            class="
+              radio
+              text-center
+              self-center
+              py-2
+              px-4
+              rounded-lg
+              cursor-pointer
+              hover:opacity-75
+            "
+            >Non-Covid</label
+          >
+        </div>
       </div>
-      <div class="inline-flex rounded-lg">
-        <input
-          type="radio"
-          name="room_type"
-          id="roomPublic"
-          value="2"
-          hidden
-          @change="changeJenis($event)"
-        />
-        <label
-          for="roomPublic"
-          class="
-            radio
-            text-center
-            self-center
-            py-2
-            px-4
-            rounded-lg
-            cursor-pointer
-            hover:opacity-75
-          "
-          >Non-Covid</label
-        >
+      <input
+        type="text"
+        v-model="input"
+        @input="changeInput"
+        @keyup.enter="handleKeyPress"
+        placeholder="Ketikkan Kota..."
+        class="
+          placeholder-gray-500
+          rounded-sm
+          h-10
+          border-4 border-gray-500
+          w-80
+          mx-auto
+          text-gray-900 text-center
+          placeholder-transparent
+          focus:outline-none
+        "
+      />
+      <div v-if="filteredCity.length > 0">
+        <ul>
+          <li
+            class="
+              mx-auto
+              w-80
+              bg-green-300
+              font-medium
+              cursor-pointer
+              hover:bg-green-500
+              transition-all
+            "
+            v-for="prov in filteredCity"
+            :key="prov"
+            @click="getInfoBed(prov)"
+          >
+            {{ prov.name }}
+          </li>
+        </ul>
       </div>
-    </div>
-    <input
-      type="text"
-      v-model="input"
-      @input="changeInput"
-      @keyup.enter="handleKeyPress"
-      placeholder="Ketikkan Kota..."
-      class="
-        rounded-sm
-        h-10
-        w-full
-        border-b-2 border-gray-300
-        text-gray-900 text-center
-        placeholder-transparent
-        focus:outline-none
-        focus:border-red-400
-      "
-    />
-
-    <div v-if="filteredCity.length > 0" class="wrapper-suggestion">
-      <ul>
-        <li
-          class="
-            bg-green-300
-            font-medium
-            cursor-pointer
-            hover:bg-green-500
-            transition-all
-          "
-          v-for="prov in filteredCity"
-          :key="prov"
-          @click="getInfoBed(prov)"
-        >
-          {{ prov.name }}
-        </li>
-      </ul>
     </div>
   </div>
-  <div v-if="loading">Loading...</div>
+  <div v-if="loading">
+    <div
+      class="
+        border border-gray-400
+        shadow
+        rounded-md
+        p-4
+        max-w-sm
+        w-full
+        mx-auto
+      "
+    >
+      <div class="animate-pulse flex space-x-4">
+        <div class="rounded-full bg-gray-400 h-12 w-12"></div>
+        <div class="flex-1 space-y-4 py-1">
+          <div class="h-4 bg-gray-400 rounded w-3/4"></div>
+          <div class="space-y-2">
+            <div class="h-4 bg-gray-400 rounded"></div>
+            <div class="h-4 bg-gray-400 rounded w-5/6"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
   <div v-if="error">Terjadi Error</div>
   <div v-else-if="resultEnd.length > 0">
     <div
       v-for="data in resultEnd"
       :key="data"
-      class="bg-green-400 w-96 h-60 rounded-lg text-left shadow-xl my-3 p-4"
+      class="
+        border border-gray-400
+        shadow-lg
+        rounded-md
+        max-w-sm
+        w-full
+        mx-auto
+        my-3
+        p-4
+        bg-gray-300
+      "
     >
       <p>Rumah Sakit : {{ data.name }}</p>
       <p>Alamat : {{ data.address }}</p>
@@ -108,6 +145,12 @@
       <p>{{ data.updated_at_minutes }}</p>
     </div>
   </div>
+  <button
+    @click="scrollToTop"
+    class="z-10 fixed bottom-5 right-5 p-3 bg-gray-300 rounded-full shadow-md"
+  >
+    TOP
+  </button>
 </template>
 
 <script>
@@ -127,7 +170,7 @@ export default {
   // },
   setup() {
     const checkJenis = ref(1);
-
+    const isScroll = ref(false);
     const input = ref("");
     const error = ref(false);
     const loading = ref(false);
@@ -375,6 +418,7 @@ export default {
         error.value = true;
       } finally {
         loading.value = false;
+        input.value = "";
       }
     };
     const changeJenis = (e) => {
@@ -404,7 +448,28 @@ export default {
       return displayedTime;
     };
 
+    window.onscroll = function () {
+      scrollFunction();
+    };
+
+    function scrollFunction() {
+      if (
+        document.body.scrollTop > 20 ||
+        document.documentElement.scrollTop > 20
+      ) {
+        isScroll.value = true;
+      } else {
+        isScroll.value = false;
+      }
+    }
+
+    const scrollToTop = () => {
+      document.body.scrollTop = 0;
+      document.documentElement.scrollTop = 0;
+    };
+
     return {
+      isScroll,
       input,
       checkJenis,
       handleKeyPress,
@@ -414,17 +479,21 @@ export default {
       changeInput,
       getInfoBed,
       changeJenis,
+      scrollToTop,
     };
   },
 };
 </script>
 <style scoped>
+html {
+  scroll-behavior: smooth;
+}
 input:checked ~ .radio {
   color: white;
   background-color: rgb(67, 170, 67);
 }
 input ~ .radio {
   color: rgb(102, 100, 100);
-  background-color: white;
+  background-color: rgb(185, 184, 184);
 }
 </style>
