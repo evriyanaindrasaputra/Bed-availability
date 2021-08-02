@@ -148,6 +148,7 @@
   <button
     @click="scrollToTop"
     class="z-10 fixed bottom-5 right-5 p-3 bg-gray-300 rounded-full shadow-md"
+    :class="[isScroll ? BLOCK : HIDDEN]"
   >
     TOP
   </button>
@@ -169,6 +170,8 @@ export default {
   //   HelloWorld,
   // },
   setup() {
+    const HIDDEN = "hidden";
+    const BLOCK = "block";
     const checkJenis = ref(1);
     const isScroll = ref(false);
     const input = ref("");
@@ -464,11 +467,12 @@ export default {
     }
 
     const scrollToTop = () => {
-      document.body.scrollTop = 0;
-      document.documentElement.scrollTop = 0;
+      window.scrollTo({ top: 0, behavior: "smooth" });
     };
 
     return {
+      HIDDEN,
+      BLOCK,
       isScroll,
       input,
       checkJenis,
