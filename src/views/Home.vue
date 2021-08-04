@@ -102,13 +102,35 @@
         shadow
         rounded-md
         p-4
+        my-3
         max-w-sm
         w-full
         mx-auto
       "
     >
       <div class="animate-pulse flex space-x-4">
-        <div class="rounded-full bg-gray-400 h-12 w-12"></div>
+        <div class="flex-1 space-y-4 py-1">
+          <div class="h-4 bg-gray-400 rounded w-3/4"></div>
+          <div class="space-y-2">
+            <div class="h-4 bg-gray-400 rounded"></div>
+            <div class="h-4 bg-gray-400 rounded w-5/6"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="
+        border border-gray-400
+        shadow
+        rounded-md
+        my-3
+        p-4
+        max-w-sm
+        w-full
+        mx-auto
+      "
+    >
+      <div class="animate-pulse flex space-x-4">
         <div class="flex-1 space-y-4 py-1">
           <div class="h-4 bg-gray-400 rounded w-3/4"></div>
           <div class="space-y-2">
@@ -121,29 +143,41 @@
   </div>
   <div v-if="error">Terjadi Error</div>
   <div v-else-if="resultEnd.length > 0">
-    <div
-      v-for="data in resultEnd"
-      :key="data"
-      class="
-        border border-gray-400
-        shadow-lg
-        rounded-md
-        max-w-sm
-        w-full
-        mx-auto
-        my-3
-        p-4
-        bg-gray-300
-      "
-    >
-      <p>Rumah Sakit : {{ data.name }}</p>
-      <p>Alamat : {{ data.address }}</p>
-      <p>Tempat Tidur Yang Tersedia : {{ data.available_bed }}</p>
-      <p>Antrian : {{ data.bed_queue }}</p>
-      <!-- <p>Detail Bed : {{ data.bed_detail_link }}</p> -->
-      <p>Hotline : {{ data.hotline || "Tidak tersedia" }}</p>
-      <p>{{ data.updated_at_minutes }}</p>
-    </div>
+    <template v-for="data in resultEnd" :key="data">
+      <div
+        :class="[data.available_bed !== 0 ? AVAILABLE : NOTAVAILABLE]"
+        class="
+          shadow-lg
+          rounded-md
+          max-w-sm
+          w-full
+          mx-auto
+          my-3
+          p-5
+          text-left
+          hover:scale-105
+          delay-150
+          transform
+          transition-all
+        "
+      >
+        <p class="text-lg font-bold text-gray-500">
+          {{ data.name }}
+        </p>
+        <p class="text-sm text-gray-400 mb-1">Alamat : {{ data.address }}</p>
+        <hr class="mb-2" />
+        <p class="text-sm text-gray-500">
+          IGD Yang Tersedia : {{ data.available_bed }}
+        </p>
+        <p class="text-sm text-gray-500">Antrian : {{ data.bed_queue }}</p>
+        <p class="text-sm text-gray-500">
+          Hotline : {{ data.hotline || "Tidak tersedia" }}
+        </p>
+        <p class="text-sm text-gray-500 text-right">
+          {{ data.updated_at_minutes }}
+        </p>
+      </div>
+    </template>
   </div>
   <button
     @click="scrollToTop"
@@ -172,6 +206,8 @@ export default {
   setup() {
     const HIDDEN = "hidden";
     const BLOCK = "block";
+    const AVAILABLE = "bed-available";
+    const NOTAVAILABLE = "bed-not-available";
     const checkJenis = ref(1);
     const isScroll = ref(false);
     const input = ref("");
@@ -473,6 +509,8 @@ export default {
     return {
       HIDDEN,
       BLOCK,
+      AVAILABLE,
+      NOTAVAILABLE,
       isScroll,
       input,
       checkJenis,
@@ -488,7 +526,7 @@ export default {
   },
 };
 </script>
-<style scoped>
+<style lang="postcss" scoped>
 html {
   scroll-behavior: smooth;
 }
@@ -499,5 +537,13 @@ input:checked ~ .radio {
 input ~ .radio {
   color: rgb(102, 100, 100);
   background-color: rgb(185, 184, 184);
+}
+@layer components {
+  .bed-available {
+    @apply bg-white hover:bg-green-100;
+  }
+  .bed-not-available {
+    @apply bg-red-100 hover:bg-red-200;
+  }
 }
 </style>
