@@ -140,6 +140,28 @@
         </div>
       </div>
     </div>
+    <div
+      class="
+        border border-gray-400
+        shadow
+        rounded-md
+        my-3
+        p-4
+        max-w-sm
+        w-full
+        mx-auto
+      "
+    >
+      <div class="animate-pulse flex space-x-4">
+        <div class="flex-1 space-y-4 py-1">
+          <div class="h-4 bg-gray-400 rounded w-3/4"></div>
+          <div class="space-y-2">
+            <div class="h-4 bg-gray-400 rounded"></div>
+            <div class="h-4 bg-gray-400 rounded w-5/6"></div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
   <div v-if="error">Terjadi Error</div>
   <div v-else-if="resultEnd.length > 0">
@@ -149,7 +171,7 @@
         class="
           shadow-lg
           rounded-md
-          max-w-sm
+          max-w-lg
           w-full
           mx-auto
           my-3
@@ -166,9 +188,39 @@
         </p>
         <p class="text-sm text-gray-400 mb-1">Alamat : {{ data.address }}</p>
         <hr class="mb-2" />
-        <p class="text-sm text-gray-500">
+        <div
+          v-if="Array.isArray(data.available_bed)"
+          class="flex flex-wrap justify-center items-center"
+        >
+          <template v-for="bed in data.available_bed" :key="bed">
+            <div
+              v-if="bed.amount > 0"
+              class="
+                w-44
+                h-48
+                p-2
+                bg-gradient-to-b
+                from-green-200
+                to-green-300
+                rounded-md
+                break-word
+                mx-3
+                my-2
+                text-sm text-gray-500 text-center
+              "
+              :key="bed"
+            >
+              <p>{{ bed.amount }}</p>
+              <p>{{ bed.class }}</p>
+              <p>{{ bed.address }}</p>
+            </div>
+          </template>
+          <!-- IGD Yang Tersedia : {{ data.available_bed }} -->
+        </div>
+        <p v-else class="text-sm text-gray-500">
           IGD Yang Tersedia : {{ data.available_bed }}
         </p>
+
         <p class="text-sm text-gray-500">Antrian : {{ data.bed_queue }}</p>
         <p class="text-sm text-gray-500">
           Hotline : {{ data.hotline || "Tidak tersedia" }}
@@ -429,13 +481,24 @@ export default {
                   .find(".card-footer")
                   .find(":nth-child(1)")
                   .text()
-                  .trim();
+                  .trim()
+                  .split(" ");
+                if (getLastUpdatedAt[2] === "menit") {
+                  updatedAt.push(
+                    getRelativeLastUpdatedTime(Number(getLastUpdatedAt[1]))
+                  );
+                } else if (getLastUpdatedAt[2] === "jam") {
+                  updatedAt.push(
+                    getRelativeLastUpdatedTime(Number(getLastUpdatedAt[1]) * 60)
+                  );
+                }
+
                 bed.push({
                   amount: +getBedInfo,
                   class: getBedInfoClass,
                   address: getBedInfoAddress,
                 });
-                updatedAt.push(getLastUpdatedAt);
+                // updatedAt.push(getLastUpdatedAt);
               });
 
               hotline.push(
@@ -445,13 +508,14 @@ export default {
               hospitalDetail.push({
                 name: hospitalName,
                 address: hospitalAddress,
-                bed,
+                available_bed: bed,
                 updatedAt,
                 hotline,
               });
             });
+          result.resultEnd = hospitalDetail;
         }
-
+        console.log(result.resultEnd);
         result.filteredCity = [];
       } catch (error) {
         error.value = true;
